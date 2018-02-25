@@ -1,0 +1,14 @@
+backports-abc==0.5
+certifi==2018.1.18
+Django==1.11
+django-bootstrap4==0.0.6
+django-sslserver==0.19
+pathlib==1.0.1
+Pillow==5.0.0
+pytz==2018.3
+qrcode==5.3
+reportlab==3.4.0
+singledispatch==3.4.0.3
+six==1.11.0
+sorl-thumbnail==12.4.1
+tornado==4.5.3
