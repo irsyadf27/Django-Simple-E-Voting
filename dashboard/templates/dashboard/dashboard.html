@@ -1,0 +1,115 @@
+{% load staticfiles %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+{% load perm_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>E-Voting</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-toggleable-md navbar-expand-lg navbar-light fixed-top bg-light">
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#">E-Voting</a>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          {% if request.user.is_staff %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'dashboard-admin' %}">Halaman Admin</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <main class="col-sm-12  col-md-12 pt-3 ">
+          <h1 class="text-center">Daftar Calon</h1>
+            {% if messages %}
+              {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} fade show" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+                <strong>{{ message.tags }}!</strong> {{ message }}
+              </div>
+              {% endfor %}
+            {% endif %}
+            {% if not object_list %}
+            <div class="alert alert-warning fade show" role="alert">
+              <strong>Pemberitahuan!</strong> Belum ada kandidat yang didaftarkan.
+            </div>
+            {% endif %}
+          {% if request.user.is_staff or request.user.is_superuser %}
+            <div class="alert alert-warning fade show" role="alert">
+              <strong>Pemberitahuan!</strong> Anda tidak bisa melakukan vote.
+            </div>
+          {% elif request.user|check_permission:'pilih.bisa_vote' %}
+          <section class="row text-center placeholders">
+            {% for kandidat in object_list %}
+              <div class="col-6 col-sm-3 placeholder">
+                {% thumbnail kandidat.foto "200x200" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}
+                </td>
+                <h5>{{ kandidat.no_urut }}. {{ kandidat.nama }}</h5>
+                <p><a href="{% url 'pilih-kandidat' kandidat.pk %}" class="btn btn-outline-success pilih-kandidat" data-id="{{ kandidat.pk }}" data-nama="{{ kandidat.nama }}"><i class="fa fa-star"></i> Pilih</a></p>
+              </div>
+            {% endfor %}
+          </section>
+          {% else %}
+            <div class="alert alert-warning fade show" role="alert">
+              <strong>Pemberitahuan!</strong> Anda tidak bisa melakukan vote/sudah melakukan vote.
+            </div>
+          {% endif %}
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'popper.js/dist/umd/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+    <script type="text/javascript">
+      ws = new WebSocket("wss://{{ socket_ip }}:{{ socket_port }}/vote");
+      ws.onopen = function(){
+        console.log("ws open");
+      };
+      $('.pilih-kandidat').click(function() {
+        var nama = $(this).data('nama');
+        var message = {
+          'event': 'vote',
+          'kandidat': nama
+        };
+        ws.send(JSON.stringify(message));
+      });
+      ws.onclose = function() {
+        console.log('ws closed');
+      }
+    </script>
+  </body>
+</html>

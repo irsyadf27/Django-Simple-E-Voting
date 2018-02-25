@@ -1,0 +1,75 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>E-Voting | {% block title %} {% endblock %}</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'mdi/css/materialdesignicons.min.css' %}">
+  <link rel="stylesheet" href="{% static 'simple-line-icons/css/simple-line-icons.css' %}">
+  <!-- endinject -->
+  <!-- plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{% static 'css/style_admin.css' %}">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="{% static 'img/favicon.png' %}" />
+</head>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-top justify-content-center">
+        <a class="navbar-brand brand-logo" href="index.html"><img src="{% static 'img/logo.svg' %}" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'img/logo-mini.svg' %}" alt="logo"/></a>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard-admin' %}"><i class="menu-icon mdi mdi-view-dashboard"></i> <span class="menu-title">Dashboard</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'list-admin' %}"><i class="menu-icon mdi mdi-account-check"></i> <span class="menu-title">Admin</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'list-pemilih' %}"><i class="menu-icon mdi mdi-account-multiple"></i> <span class="menu-title">Pemilih</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'list-kandidat' %}"><i class="menu-icon mdi mdi-account"></i> <span class="menu-title">Kandidat</span></a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="menu-icon mdi mdi-logout"></i> <span class="menu-title">Logout</span></a></li>
+        </ul>
+      </nav>
+
+{% block content %} {% endblock %}
+
+        <!-- partial:partials/_footer.html -->
+        <footer class="footer">
+          <div class="container-fluid clearfix">
+            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018 <a href="http://www.bootstrapdash.com/" target="_blank">Bootstrapdash</a>. All rights reserved.</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i></span>
+          </div>
+        </footer>
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+
+  <!-- plugins:js -->
+  <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
+  <script src="{% static 'popper.js/dist/umd/popper.min.js' %}"></script>
+  <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'chart.js/dist/Chart.min.js' %}"></script>
+  <!-- End plugin js for this page-->
+  <!-- inject:js -->
+  <script src="{% static 'js/misc.js' %}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  {% block js %}{% endblock %}
+  <!-- End custom js for this page-->
+</body>
+
+</html>

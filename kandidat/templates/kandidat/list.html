@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load thumbnail %}
+
+{% block title %}Kandidat{% endblock %}
+
+{% block content %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Daftar Kandidat <a href="{% url 'create-kandidat' %}" class="btn btn-sm btn-dark btn-fw float-right"><i class="mdi mdi-plus-circle"></i> Tambah</a></h4>
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th width="10%">
+                          No. Urut
+                        </th>
+                        <th width="15%">
+                          Foto
+                        </th>
+                        <th width="50%">
+                          Nama
+                        </th>
+                        <th>
+                          Aksi
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for kandidat in object_list %}
+                      <tr>
+                        <td>{{ kandidat.no_urut }}</td>
+                        <td class="py-1">
+                        {% thumbnail kandidat.foto "80x80" crop="center" as im %}
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                        {% endthumbnail %}
+                        </td>
+                        <td>
+                          {{ kandidat.nama }}
+                        </td>
+                        <td>
+                            <a href="{% url 'update-kandidat' kandidat.pk %}" class="btn btn-sm btn-outline-primary"><i class="mdi mdi-pencil-box"></i> Ubah</a> 
+                            <a href="{% url 'delete-kandidat' kandidat.pk %}" class="btn btn-sm btn-outline-danger"><i class="mdi mdi-delete"></i> Hapus</a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                    <div class="float-left pt-3">
+                        <p>
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                        </p>
+                    </div>
+                    <div class="float-right pt-3">
+                        <div class="btn-group" role="group" aria-label="Second group">
+                        {% if page_obj.has_previous %}
+                            <a href="{% url 'list-kandidat' %}?page={{ page_obj.previous_page_number }}" class="btn btn-fw btn-sm btn-secondary"><i class="mdi mdi-arrow-left-bold-circle-outline"></i></a>
+                        {% else %}
+                            <a href="#" class="btn btn-fw btn-sm btn-secondary disabled"><i class="mdi mdi-arrow-left-bold-circle-outline"></i></a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                            <a href="{% url 'list-kandidat' %}?page={{ page_obj.next_page_number }}" class="btn btn-fw btn-sm btn-secondary"><i class="mdi mdi-arrow-right-bold-circle-outline"></i></a>
+                        {% else %}
+                            <a href="#" class="btn btn-fw btn-sm btn-secondary disabled"><i class="mdi mdi-arrow-right-bold-circle-outline"></i></a>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- content-wrapper ends -->
+{% endblock %}

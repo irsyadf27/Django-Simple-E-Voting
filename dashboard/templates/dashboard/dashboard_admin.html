@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load bootstrap4 %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Pie Chart</h4>
+                  <canvas id="pieChart" style="height:250px"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Bar chart</h4>
+                  <canvas id="barChart" style="height:230px"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+{% endblock %}
+
+{% block js %}
+  <script type="text/javascript">
+$(function() {
+'use strict';
+var data = {
+    datasets: [{
+        data: [
+            {% for k in kandidat %}
+            {{ k.dipilih.count }},
+            {% endfor %}
+        ],
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)'
+        ],
+        borderColor: [
+            'rgba(255,99,132,1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+    }],
+    labels: [
+        {% for k in kandidat %}
+          '{{ k.nama }}',
+        {% endfor %}
+    ]
+  };
+  var doughnutPieOptions = {
+    responsive: true,
+    animation: {
+        animateScale: true,
+        animateRotate: true
+    }
+  };
+  var barChartOptions = {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true
+        }
+        }]
+    },
+    legend: {
+        display: false
+    },
+    elements: {
+        point: {
+            radius: 0
+        }
+    }
+
+  };
+
+    var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+    var pieChart = new Chart(pieChartCanvas, {
+      type: 'pie',
+      data: data,
+      options: doughnutPieOptions
+    });
+
+    var barChartCanvas = $("#barChart").get(0).getContext("2d");
+    var barChart = new Chart(barChartCanvas, {
+      type: 'bar',
+      data: data,
+      options: barChartOptions
+    });
+
+    var ws = new WebSocket("wss://{{ socket_ip }}:{{ socket_port }}/vote");
+    ws.onopen = function(){
+      console.log("ws open");
+      var message = {
+        'type': 'admin'
+      };
+      ws.send(JSON.stringify(message));
+    };
+    ws.onmessage = function(event) {
+      var data = JSON.parse(event.data);
+      console.log(data);
+      if(data.event == "vote") {
+        pieChart.data.datasets[0].data[pieChart.data.labels.indexOf(data.kandidat)] += 1;
+        pieChart.update();
+
+        barChart.data.datasets[0].data[barChart.data.labels.indexOf(data.kandidat)] += 1;
+        barChart.update();
+
+      }
+    }
+    ws.onclose = function() {
+      console.log('ws closed');
+    }
+});
+  </script>
+{% endblock %}
